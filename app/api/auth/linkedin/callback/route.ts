@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/app/lib/supabase";
+import { getSupabaseAdmin } from "@/app/lib/supabase";
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
@@ -35,6 +35,8 @@ export async function GET(req: NextRequest) {
   });
 
   const user = await userRes.json();
+
+  const supabaseAdmin = getSupabaseAdmin();
 
   await supabaseAdmin.from("applications").insert({
     source: "linkedin",
