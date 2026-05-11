@@ -6,7 +6,10 @@ export async function POST(req: NextRequest) {
   const file = formData.get("cv") as File | null;
 
   if (!file) {
-    return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    return NextResponse.json(
+      { error: "No file uploaded" },
+      { status: 400 }
+    );
   }
 
   const supabaseAdmin = getSupabaseAdmin();
@@ -21,10 +24,15 @@ export async function POST(req: NextRequest) {
     });
 
   if (uploadError) {
-    return NextResponse.json({ error: uploadError.message }, { status: 400 });
+    return NextResponse.json(
+      { error: uploadError.message },
+      { status: 400 }
+    );
   }
 
-  const { data } = supabaseAdmin.storage.from("cvs").getPublicUrl(fileName);
+  const { data } = supabaseAdmin.storage
+    .from("cvs")
+    .getPublicUrl(fileName);
 
   await supabaseAdmin.from("applications").insert({
     source: "cv_upload",
