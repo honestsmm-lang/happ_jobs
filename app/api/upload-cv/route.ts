@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/app/lib/supabase";
+import { getSupabaseAdmin } from "@/app/lib/supabase";
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
@@ -8,6 +8,8 @@ export async function POST(req: NextRequest) {
   if (!file) {
     return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
   }
+
+  const supabaseAdmin = getSupabaseAdmin();
 
   const fileExt = file.name.split(".").pop();
   const fileName = `${crypto.randomUUID()}.${fileExt}`;
