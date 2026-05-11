@@ -22,9 +22,10 @@ export default function UploadCvPage() {
     if (res.ok) {
       window.location.href = "/thank-you";
     } else {
-      alert("Upload failed. Please try again.");
-      setLoading(false);
-    }
+  const errorData = await res.json();
+  alert(errorData.error || "Upload failed. Please try again.");
+  setLoading(false);
+}
   }
 
   return (
