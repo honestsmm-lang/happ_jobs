@@ -14,13 +14,21 @@ export async function POST(req: NextRequest) {
 
   const supabaseAdmin = getSupabaseAdmin();
 
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${crypto.randomUUID()}.${fileExt}`;
+const originalName = file.name;
+const fileExt = originalName.includes(".")
+  ? originalName.split(".").pop()?.toLowerCase()
+  : "pdf";
+
+const safeExt = fileExt && ["pdf", "doc", "docx"].includes(fileExt)
+  ? fileExt
+  : "pdf";
+
+const fileName = `${crypto.randomUUID()}.${safeExt}`;
 
   const { error: uploadError } = await supabaseAdmin.storage
     .from("cvs")
     .upload(fileName, file, {
-      contentType: file.type,
+      contentType: "application/octet-stream",
     });
 
   if (uploadError) {
