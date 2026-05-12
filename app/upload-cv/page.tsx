@@ -6,26 +6,39 @@ export default function UploadCvPage() {
   const [loading, setLoading] = useState(false);
 
   async function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    try {
+      const file = event.target.files?.[0];
+      if (!file) return;
 
-    setLoading(true);
+      setLoading(true);
 
-    const formData = new FormData();
-    formData.append("cv", file);
+      const ext = file.name.split(".").pop()?.toLowerCase() || "pdf";
+      const safeExt = ["pdf", "doc", "docx"].includes(ext) ? ext : "pdf";
+      const safeFileName = `cv-${Date.now()}.${safeExt}`;
 
-    const res = await fetch("/api/upload-cv", {
-      method: "POST",
-      body: formData,
-    });
+      const safeFile = new File([file], safeFileName, {
+        type: "application/octet-stream",
+      });
 
-    if (res.ok) {
-      window.location.href = "/thank-you";
-    } else {
-  const errorData = await res.json();
-  alert(errorData.error || "Upload failed. Please try again.");
-  setLoading(false);
-}
+      const formData = new FormData();
+      formData.append("cv", safeFile, safeFileName);
+
+      const res = await fetch("/api/upload-cv", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        window.location.href = "/thank-you";
+      } else {
+        const errorData = await res.json();
+        alert(errorData.error || "Upload failed. Please try again.");
+        setLoading(false);
+      }
+    } catch (error: any) {
+      alert(error.message || "Upload failed. Please try again.");
+      setLoading(false);
+    }
   }
 
   return (
