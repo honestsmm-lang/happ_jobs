@@ -38,13 +38,17 @@ export async function GET(req: NextRequest) {
 
   const supabaseAdmin = getSupabaseAdmin();
 
-  await supabaseAdmin.from("applications").insert({
+  const { error } = await supabaseAdmin.from("applications").insert({
     source: "linkedin",
     name: user.name,
     email: user.email,
     linkedin_id: user.sub,
     linkedin_picture: user.picture,
   });
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
 
   return NextResponse.redirect(new URL("/thank-you", req.url));
 }
